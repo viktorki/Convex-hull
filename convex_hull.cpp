@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <cmath>
 #include <algorithm>
 using namespace std;
@@ -65,24 +66,29 @@ void graham_scan(Point points[], int n, Point result[], int &m)
 }
 int main()
 {
-	int n, i, x, y, m;
+	int n, i, m;
+	double x, y;
 	Point points[MAXN], result[MAXN];
 	while (1)
 	{
 		cout << "Points count: ";
 		cin >> n;
-		if (n < 2 || n > MAXN)
+		if (n < 1 || n > MAXN)
 			cout << "Points count must be between 2 and " << MAXN << "!" << endl;
 		else
 			break;
 	}
+	cout << "Enter coordinates:" << endl;
 	for (i = 0; i < n; i++)
 	{
 		cin >> x >> y;
 		points[i] = Point(x, y);
 	}
 	graham_scan(points, n, result, m);
+	cout << fixed << setprecision(5);
+	cout << endl;
+	cout << "Convex hull:" << endl;
 	for (i = 0; i < m; i++)
-		cout << result[i].getX(), result[i].getY();
+		cout << result[i].getX() << " " << result[i].getY() << endl;
 	return 0;
 }
