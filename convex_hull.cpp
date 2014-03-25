@@ -1,52 +1,88 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <cstdio>
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 using namespace std;
 const int MAXN = 20000;
-struct point
+class Point
 {
-	int n;
+public:
+	Point();
+	Point(double, double);
+	double getX() const;
+	double getY() const;
+	double distance(const Point&) const;
+private:
 	double x, y;
-} p[MAXN], stack[MAXN];
-int n, top;
-double d(point p1, point p2)
+} p0;
+Point::Point()
 {
-	return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+	x = 0;
+	y = 0;
 }
-bool compare_cos(point p1, point p2)
+Point::Point(double x, double y)
 {
-	return (p[0].x - p1.x) * d(p[0], p2) < (p[0].x - p2.x) * d(p[0], p1);
+	this->x = x;
+	this->y = y;
 }
-bool convex(point p1, point p2, point p3)
+double Point::getX() const
 {
-	return (p2.x - p1.x) * (p3.y - p2.y) >(p3.x - p2.x) * (p2.y - p1.y);
+	return x;
 }
-void graham_scan()
+double Point::getY() const
 {
-	int i, min = 0;
+	return y;
+}
+double Point::distance(const Point &p) const
+{
+	return sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y));
+}
+bool compare_cos(const Point &p1, const Point &p2)
+{
+	return (p0.getX() - p1.getX()) * p0.distance(p2) < (p0.getX() - p2.getX()) * p0.distance(p1);
+}
+bool convex(const Point &p1, const Point &p2, const Point &p3)
+{
+	return (p2.getX() - p1.getX()) * (p3.getY() - p2.getY()) >(p3.getX() - p2.getX()) * (p2.getY() - p1.getY());
+}
+void graham_scan(Point points[], int n, Point result[], int &m)
+{
+	int i, min_i = 0, top = 0;
+	Point stack[MAXN];
 	for (i = 1; i < n; i++)
-	if (p[min].y > p[i].y)
-		min = i;
-	swap(p[0], p[min]);
-	sort(p + 1, p + n, compare_cos);
-	for (i = 0; i < n; i++)
-		p[i].n = i;
+		if (points[min_i].getY() > points[i].getY())
+			min_i = i;
+	swap(points[0], points[min_i]);
+	sort(points + 1, points + n, compare_cos);
 	for (i = 0; i < n; i++)
 	{
-		while (top > 1 && !convex(stack[top - 2], stack[top - 1], p[i]))
+		while (top > 1 && !convex(stack[top - 2], stack[top - 1], points[i]))
 			top--;
-		stack[top++] = p[i];
+		stack[top++] = points[i];
 	}
+	m = top;
+	for (i = 0; i < m; i++)
+		result[i] = stack[i];
 }
 int main()
 {
-	int i;
-	scanf("%d", &n);
+	int n, i, x, y, m;
+	Point points[MAXN], result[MAXN];
+	while (1)
+	{
+		cout << "Points count: ";
+		cin >> n;
+		if (n < 2 || n > MAXN)
+			cout << "Points count must be between 2 and " << MAXN << "!" << endl;
+		else
+			break;
+	}
 	for (i = 0; i < n; i++)
-		scanf("%lf%lf", &p[i].x, &p[i].y);
-	graham_scan();
-	for (i = 0; i < top; i++)
-		printf("%.5lf %.5lf\n", stack[i].x, stack[i].y);
+	{
+		cin >> x >> y;
+		points[i] = Point(x, y);
+	}
+	graham_scan(points, n, result, m);
+	for (i = 0; i < m; i++)
+		cout << result[i].getX(), result[i].getY();
 	return 0;
 }
